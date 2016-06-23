@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "pagediff": "app.js"
+  },
   "keywords": [
     "diff",
     "visual",
@@ -16,7 +19,6 @@
   "dependencies": {
     "commander": "^2.9.0",
     "node-resemble-js": "0.0.5",
-    "resemblejs": "^2.2.1",
     "webshot": "^0.18.0"
   }
 }
