@@ -1,0 +1,22 @@
+{
+  "name": "pagediffer",
+  "version": "0.0.1",
+  "description": "A visual page diff utility",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "diff",
+    "visual",
+    "webpage"
+  ],
+  "author": "Joe Pfeiffer",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "node-resemble-js": "0.0.5",
+    "resemblejs": "^2.2.1",
+    "webshot": "^0.18.0"
+  }
+}
