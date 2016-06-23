@@ -1,6 +1,6 @@
 {
   "name": "pagediffer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A visual page diff utility",
   "main": "app.js",
   "scripts": {
