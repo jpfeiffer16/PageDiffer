@@ -11,18 +11,16 @@ program
   .option('-p, --pipe [boolean]', 'Output Compare image data to stdout')
   .parse(process.argv);
 
-//TODO: Do some parameter checking here
+if (!program.source || !program.target)
+  throw('Must specify a source and target. Use --help for usage info.');
+
+
 getDiff(program.source, program.target, __dirname + '/', function(info) {
   if (program.pipe)
     console.log(info.data);
   else
     console.log('Similarity: ', info.similarity, '%');
 });
-
-//var website1 = program.source,
-//    website2 = program.target,
-//    website1Image = __dirname + '/' + website1 + '.png',
-//    website2Image = __dirname + '/' + website2 + '.png';
 
 function getDiff(sourceUrl, targetUrl, dir, callback) {
   var website1Image = dir + sourceUrl + '.png';
