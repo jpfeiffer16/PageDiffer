@@ -8,7 +8,10 @@ program
   .version(require('./package.json').version)
   .option('-t, --target [string]', 'Target webpage')
   .option('-s, --source [string]', 'Source webpage')
-  .option('-p, --pipe [boolean]', 'Output Compare image data to stdout')
+  .option('-f, --file [string]',
+      'File to read a list of compares from. Should be a csv structured file. The first line will be stripped off.')
+  .option('-p, -epipe [boolean]',
+      'Output Compare image data to stdout(In base64 format)')
   .parse(process.argv);
 
 if (!program.source || !program.target)

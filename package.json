@@ -19,6 +19,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "node-resemble-js": "0.0.5",
+    "q": "^1.4.1",
     "webshot": "^0.18.0"
   },
   "repository": "https://github.com/jpfeiffer16/PageDiffer"
