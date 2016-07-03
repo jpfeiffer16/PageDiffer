@@ -4,7 +4,8 @@ var CompareManger = function() {
 
   var self = this;
 
-  self.doCompare = function(compare) {
+  self.doCompare = function(compare, threads) {
+
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
       //TODO: Need some sanity checks on the compare object here.
@@ -16,6 +17,18 @@ var CompareManger = function() {
         }, function(progress) {
           //TODO: Progress will be reported here when the time comes. 
         });
+    } else {
+      function reloadThread(threadIndex) {
+        
+      }
+      //TODO: Multiple compares here
+      var count = compare.length;
+      var done = 0;
+      var numThreads = threads || 3;
+      var threadPool = [];
+      threadPool.length = numThreads;
+
+      
     }
   }
 }

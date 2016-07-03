@@ -11,7 +11,7 @@ program
   .option('-f, --file [string]',
       'File to read a list of compares from. Should be a csv structured file. The first line will be stripped off.')
   .option('-T, --threads [number]', 'Number of threads to use for csv files.')
-  .option('-p, -epipe [boolean]',
+  .option('-p, -pipe [boolean]',
       'Output Compare image data to stdout(In base64 format)')
   .parse(process.argv);
 
