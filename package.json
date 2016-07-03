@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^2.9.0",
+    "csv-parse": "^1.1.1",
     "node-resemble-js": "0.0.5",
     "q": "^1.4.1",
     "webshot": "^0.18.0"
