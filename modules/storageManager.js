@@ -1,6 +1,7 @@
-var fs = require('fs');
+var fs = require('fs'),
+    uuid = require('node-uuid');
 var StorageWriter = function(path) {
-  this.newCompare = function(name, callback) {
+  this.newRecord = function(name, callback) {
     var newPath = path + name + '/';
     fs.mkdir(newPath, function() {
       if (typeof callback === 'function')
@@ -17,7 +18,7 @@ var StorageManager = function(dir) {
   //own respective folders
 
   //NOTE: Create the top-level dir for the compare
-  var id = 12345; //Temporary
+  var id = 'compare-' + uuid.v4();
   var path = dir + '/' + id + '/';
   fs.mkdir(path, function(err) {
     if (err) throw err;
@@ -28,4 +29,4 @@ var StorageManager = function(dir) {
   };
 }
 
-modules.exports = new Storage();
+module.exports = StorageManager;

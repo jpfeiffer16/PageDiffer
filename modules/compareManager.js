@@ -1,10 +1,13 @@
 var Q = require('q');
+var webshot = require('webshot'),
+    fs = require('fs'),
+    resemble = require('node-resemble-js');
 
 var CompareManger = function() {
 
   var self = this;
 
-  self.doCompare = function(compare, threads) {
+  self.doCompare = function(compare, storageWriter, threads) {
 
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
@@ -18,17 +21,52 @@ var CompareManger = function() {
           //TODO: Progress will be reported here when the time comes. 
         });
     } else {
-      function reloadThread(threadIndex) {
-        
-      }
       //TODO: Multiple compares here
       var count = compare.length;
       var done = 0;
+      var index = 0;
       var numThreads = threads || 3;
+      if (compare.length < numThreads)
+        numThreads = compare.length;
       var threadPool = [];
-      threadPool.length = numThreads;
-
-      
+      //threadPool.length = numThreads;
+      for (var i = 0; i < numThreads; i++) {
+        threadPool.push(null);
+      }
+      //console.log(threadPool);      
+      reloadThreads();
+      function reloadThreads() {
+        //TODO: Check if we're done here
+        console.log('Preparing to load threads');
+        threadPool.forEach(function(item) {
+          console.log('loading a thread');
+          if (item == null ||
+              item.inspect().state == 'fulfilled' ||
+              item.inspect().state == 'rejected') {
+            //NOTE: Add a new compare and run it here.
+            var currentCompare = compare[index];
+            storageWriter.newRecord(
+                currentCompare.sourceUrl + '-' + currentCompare.targetUrl,
+                function(path) {
+              getDiff(
+                  currentCompare.sourceUrl,
+                  currentCompare.targetUrl,
+                  path,
+                  null)
+                .then(function() {
+                  //Success here 
+                  done++;
+                  reloadThreads();
+                }, function() {
+                  //Failure here
+                  done++;
+                  reloadThreads();
+                });
+              index++;
+            });
+          }
+        });
+      }
     }
   }
 }
@@ -69,5 +107,6 @@ function getDiff(sourceUrl, targetUrl, dir, callback) {
       });
     });
   });
+  return deferred.promise;
 }
-modules.exports = new CompareManger();
+module.exports = new CompareManger();

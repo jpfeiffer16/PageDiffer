@@ -2,7 +2,8 @@
 var webshot = require('webshot'),
     resemble = require('node-resemble-js'),
     fs = require('fs'),
-    program = require('commander');
+    program = require('commander'),
+    os = require('os');
 
 program
   .version(require('./package.json').version)
@@ -15,17 +16,30 @@ program
       'Output Compare image data to stdout(In base64 format)')
   .parse(process.argv);
 
-if ((!program.source || !program.target) ||
-    program.file != undefined)
+if ((!program.source || !program.target) &&
+    !program.file)
   throw('Must specify a source and target or specify a file to use with the -f flag. Use --help for usage info.');
 
 if (program.file !== undefined) {
   //TODO: Compare from csv here
-  var fs = require('fs');
-  fs.readFile(program.file, function(data) {
-    var CsvManager = require('./modules/compareManager');
-    CsvManager.parse(data, function() {
+  var dirToUse = os.tmpdir();
+
+  //var fs = require('fs');
+  fs.readFile(program.file, function(err, data) {
+    var CsvManager = require('./modules/csvManager');
+    var CompareManager = require('./modules/compareManager');
+
+    //Init storage stuff
+    var StorageManager = require('./modules/storageManager');
+    var storageManager = new StorageManager(dirToUse);
+    var writer = storageManager.getWritter();
+
+    CsvManager.parse(data, function(compares) {
+      //console.log(data);
       //TODO: Pass to compare manger here. 
+      //console.log(compares);
+      CompareManager.doCompare(compares, writer, 3);
+
     });
   });
 } else {
