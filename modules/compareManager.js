@@ -1,14 +1,12 @@
-var Q = require('q');
-var webshot = require('webshot'),
+var Q = require('q'),
+    webshot = require('webshot'),
     fs = require('fs'),
     resemble = require('node-resemble-js');
 
 var CompareManger = function() {
-
   var self = this;
 
-  self.doCompare = function(compare, storageWriter, threads) {
-
+  self.doCompare = function(compare, storageWriter, threads, callback) {
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
       //TODO: Need some sanity checks on the compare object here.
@@ -33,37 +31,40 @@ var CompareManger = function() {
       for (var i = 0; i < numThreads; i++) {
         threadPool.push(null);
       }
-      //console.log(threadPool);      
       reloadThreads();
       function reloadThreads() {
         //TODO: Check if we're done here
-        console.log('Preparing to load threads');
+        if (done >= count) {
+          if (typeof callback === 'function') callback();
+          return;
+        }
+        if (index >= count) setTimout(reloadThreads, 300);
         threadPool.forEach(function(item) {
-          console.log('loading a thread');
           if (item == null ||
               item.inspect().state == 'fulfilled' ||
               item.inspect().state == 'rejected') {
             //NOTE: Add a new compare and run it here.
             var currentCompare = compare[index];
             storageWriter.newRecord(
-                currentCompare.sourceUrl + '-' + currentCompare.targetUrl,
+                currentCompare.sourceUrl + '-' +
+                currentCompare.targetUrl,
                 function(path) {
-              getDiff(
+              item = getDiff(
                   currentCompare.sourceUrl,
                   currentCompare.targetUrl,
-                  path,
-                  null)
+                  path)
                 .then(function() {
                   //Success here 
                   done++;
                   reloadThreads();
                 }, function() {
                   //Failure here
+                  console.log('failure running compare');
                   done++;
                   reloadThreads();
                 });
-              index++;
             });
+            index++;
           }
         });
       }
@@ -71,7 +72,8 @@ var CompareManger = function() {
   }
 }
 
-function getDiff(sourceUrl, targetUrl, dir, callback) {
+function getDiff(sourceUrl, targetUrl, dir) {
+  //TODO: Need some error checks here to make sure both images exist before we do the compare
   var deferred = Q.defer();
   var website1Image = dir + sourceUrl + '.png';
   var website2Image = dir + targetUrl + '.png';
@@ -98,7 +100,7 @@ function getDiff(sourceUrl, targetUrl, dir, callback) {
             if (err) {
               deferred.reject(err);
             }
-            if (typeof callback == 'function') deferred.resolve({
+            deferred.resolve({
               similarity: 100 - data.misMatchPercentage,
               data: base64
             });

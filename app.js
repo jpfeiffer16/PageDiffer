@@ -38,8 +38,11 @@ if (program.file !== undefined) {
       //console.log(data);
       //TODO: Pass to compare manger here. 
       //console.log(compares);
-      CompareManager.doCompare(compares, writer, 3);
-
+      CompareManager.doCompare(compares, writer, program.threads || 3,
+          function() {
+            console.log('done'); 
+          }
+      );
     });
   });
 } else {
