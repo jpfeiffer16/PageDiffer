@@ -46,8 +46,8 @@ var CompareManger = function() {
             //NOTE: Add a new compare and run it here.
             var currentCompare = compare[index];
             storageWriter.newRecord(
-                currentCompare.sourceUrl + '-' +
-                currentCompare.targetUrl,
+                fileSafe(currentCompare.sourceUrl) + '-' +
+                fileSafe(currentCompare.targetUrl),
                 function(path) {
               item = getDiff(
                   currentCompare.sourceUrl,
@@ -75,8 +75,8 @@ var CompareManger = function() {
 function getDiff(sourceUrl, targetUrl, dir) {
   //TODO: Need some error checks here to make sure both images exist before we do the compare
   var deferred = Q.defer();
-  var website1Image = dir + sourceUrl + '.png';
-  var website2Image = dir + targetUrl + '.png';
+  var website1Image = dir + fileSafe(sourceUrl) + '.png';
+  var website2Image = dir + fileSafe(targetUrl) + '.png';
   webshot(sourceUrl, website1Image, function(err) {
     if (err) {
       deferred.reject(err);
@@ -111,4 +111,13 @@ function getDiff(sourceUrl, targetUrl, dir) {
   });
   return deferred.promise;
 }
+
+function fileSafe(name) {
+  if (name == undefined) return undefined;
+  return name
+    .replace('http://', '')
+    .replace('https://', '')
+    .replace('/', '_') + '.png';
+}
+
 module.exports = new CompareManger();

@@ -7,7 +7,8 @@ var CsvManager = function() {
     //TODO: csv stuff here.
     //console.dir(csv);
     csv(data, {
-      columns: true 
+      columns: true,
+      trim: true
     },  function(err, output) {
       if (typeof callback === 'function') {
         callback(output); 
