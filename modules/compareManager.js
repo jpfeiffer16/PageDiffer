@@ -53,9 +53,10 @@ var CompareManger = function() {
                   currentCompare.sourceUrl,
                   currentCompare.targetUrl,
                   path)
-                .then(function() {
+                .then(function(data) {
                   //Success here 
                   done++;
+                  fs.writeFile(path + 'info.json', JSON.stringify(data), 'utf-8');
                   reloadThreads();
                 }, function() {
                   //Failure here

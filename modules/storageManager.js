@@ -7,7 +7,17 @@ var StorageWriter = function(path) {
       if (typeof callback === 'function')
         callback(newPath); 
     });
-  }
+  };
+
+  this.newFile = function(name, content, callback) {
+    var newPath = path + name;
+    fs.writeFile(newPath, content, 'utf-8', function(err) {
+      if (typeof callback === 'function')
+        callback(err);
+    });
+  };
+  
+  this.path = path;
 }
 
 var StorageManager = function(dir) {

@@ -40,7 +40,7 @@ if (program.file !== undefined) {
       //console.log(compares);
       CompareManager.doCompare(compares, writer, program.threads || 3,
           function() {
-            console.log('done'); 
+            console.log('Done, comapare data at', write.path); 
           }
       );
     });
