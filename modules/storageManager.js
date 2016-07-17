@@ -26,21 +26,32 @@ var StorageManager = function() {
   //This will expose a method to get a StorageWriter object
   //which will allow for writing specific compares in their
   //own respective folders
-  //TODO: Need to create this dir if it doesn't exist 
-  var dirToUse = os.homedir() + '/pagediff/';
-  //fs.mkdirSync(dirToUse);
-  //if (!fs.statSync(dirToUse).isDirectory())
+  var self = this;
+  var os = require('os');
+  var dir = os.homedir() + '/pagediff/';
+  checkDirectory(dir)
 
   //NOTE: Create the top-level dir for the compare
   var id = 'compare-' + uuid.v4();
-  var path = dir + '/' + id + '/';
-  fs.mkdir(path, function(err) {
+  self.path = dir + '/' + id + '/';
+  fs.mkdir(self.path, function(err) {
+    if (err) throw err;
+  });
+  fs.mkdir(self.path + 'overview', function(err) {
     if (err) throw err;
   });
 
   this.getWritter = function() {
-    return new StorageWriter(path);
+    return new StorageWriter(self.path);
   };
+}
+
+function checkDirectory(directory) {  
+  try {
+    fs.statSync(directory);
+  } catch(e) {
+    fs.mkdirSync(directory);
+  }
 }
 
 module.exports = StorageManager;

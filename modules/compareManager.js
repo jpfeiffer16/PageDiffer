@@ -59,7 +59,6 @@ var CompareManger = function() {
                 .then(function(data) {
                   //Success here 
                   done++;
-                  fs.writeFile(path + 'info.json', JSON.stringify(data), 'utf-8');
                   reloadThreads();
                 }, function() {
                   //Failure here
@@ -109,6 +108,9 @@ function getDiff(sourceUrl, targetUrl, dir) {
                 data: base64
               });
             });
+            fs.writeFile(dir + 'info.json', JSON.stringify({
+              similarity: 100 - data.misMatchPercentage
+            }), 'utf-8');
           });
       });
     });
