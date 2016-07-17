@@ -20,12 +20,16 @@ var StorageWriter = function(path) {
   this.path = path;
 }
 
-var StorageManager = function(dir) {
+var StorageManager = function() {
   //Proccess:
   //This will create a top level uniquely id'd folder
   //This will expose a method to get a StorageWriter object
   //which will allow for writing specific compares in their
   //own respective folders
+  //TODO: Need to create this dir if it doesn't exist 
+  var dirToUse = os.homedir() + '/pagediff/';
+  //fs.mkdirSync(dirToUse);
+  //if (!fs.statSync(dirToUse).isDirectory())
 
   //NOTE: Create the top-level dir for the compare
   var id = 'compare-' + uuid.v4();

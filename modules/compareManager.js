@@ -7,7 +7,6 @@ var CompareManger = function() {
   var self = this;
 
   self.doCompare = function(compare, storageWriter, threads, callback) {
-    console.log('Length: ' + compare.length);
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
       //TODO: Need some sanity checks on the compare object here.

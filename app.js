@@ -22,10 +22,6 @@ if ((!program.source || !program.target) &&
 
 
 
-var dirToUse = os.homedir() + '/pagediff/';
-
-// fs.mkdirSync(dirToUse);
-// if (!fs.statSync(dirToUse).isDirectory())
   
 
 var CompareManager = require('./modules/compareManager');
