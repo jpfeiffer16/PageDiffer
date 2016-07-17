@@ -20,19 +20,30 @@ if ((!program.source || !program.target) &&
     !program.file)
   throw('Must specify a source and target or specify a file to use with the -f flag. Use --help for usage info.');
 
+
+
+var dirToUse = os.homedir() + '/pagediff/';
+
+// fs.mkdirSync(dirToUse);
+// if (!fs.statSync(dirToUse).isDirectory())
+  
+
+var CompareManager = require('./modules/compareManager');
+var StorageManager = require('./modules/storageManager');
+var storageManager = new StorageManager(dirToUse);
+var writer = storageManager.getWritter();
+
 if (program.file !== undefined) {
   //TODO: Compare from csv here
-  var dirToUse = os.tmpdir();
+  
 
   //var fs = require('fs');
   fs.readFile(program.file, function(err, data) {
     var CsvManager = require('./modules/csvManager');
-    var CompareManager = require('./modules/compareManager');
+    
 
     //Init storage stuff
-    var StorageManager = require('./modules/storageManager');
-    var storageManager = new StorageManager(dirToUse);
-    var writer = storageManager.getWritter();
+    
 
     CsvManager.parse(data, function(compares) {
       //console.log(data);
@@ -46,50 +57,16 @@ if (program.file !== undefined) {
     });
   });
 } else {
-  getDiff(program.source, program.target, __dirname + '/', function(info) {
-    if (program.pipe)
-      console.log(info.data);
-    else
-      console.log('Similarity: ', info.similarity, '%');
-  });
+  CompareManager.doCompare({
+    sourceUrl: program.source,
+    targetUrl: program.target
+  }, writer, program.thread || 3);
+  // getDiff(program.source, program.target, __dirname + '/', function(info) {
+  //   if (program.pipe)
+  //     console.log(info.data);
+  //   else
+  //     console.log('Similarity: ', info.similarity, '%');
+  // });
   //NOTE: Single compare here 
-  function getDiff(sourceUrl, targetUrl, dir, callback) {
-    var website1Image = dir + sourceUrl + '.png';
-    var website2Image = dir + targetUrl + '.png';
-    webshot(sourceUrl, website1Image, function(err) {
-      if (err) {
-        console.error(err);
-        return process.exit(1);
-      }
-      webshot(targetUrl, website2Image, function(err) {
-        if (err) {
-          console.error(err);
-          return process.exit(1);
-        }
-        resemble(website1Image).compareTo(website2Image)
-          .onComplete(function(data) {
-          var png = data.getDiffImage(),
-              pngBuffer = new Buffer([]),
-              pngStream = png.pack();
-          pngStream.on('data', function(data) {
-            pngBuffer = Buffer.concat([pngBuffer, data]);
-          });
-          pngStream.on('finish', function() {
-            var base64 = pngBuffer.toString('base64');
-            fs.writeFile(dir + 'compare.png',
-                base64, 'base64', function(err) {
-              if (err) {
-                console.error(err);
-                process.exit(1);
-              }
-              if (typeof callback == 'function') callback( {
-                similarity: 100 - data.misMatchPercentage,
-                data: base64
-              });
-            });
-          });
-        });
-      });
-    });
-  }
+ 
 }

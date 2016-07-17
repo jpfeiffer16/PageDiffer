@@ -7,17 +7,21 @@ var CompareManger = function() {
   var self = this;
 
   self.doCompare = function(compare, storageWriter, threads, callback) {
+    console.log('Length: ' + compare.length);
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
       //TODO: Need some sanity checks on the compare object here.
-      getDiff(compare.sourceUrl, compare.targetUrl, __dirname, null)
+      storageWriter.newRecord(fileSafe(compare.sourceUrl) + '-' + fileSafe(compare.targetUrl), function (path) {
+        getDiff(compare.sourceUrl, compare.targetUrl, path)
         .then(function(info) {
-           console.log('Done with compare');
+            console.log('Done with compare');
         }, function(err) {
           console.error(err);
         }, function(progress) {
           //TODO: Progress will be reported here when the time comes. 
         });
+      });
+      
     } else {
       //TODO: Multiple compares here
       var count = compare.length;
@@ -88,25 +92,25 @@ function getDiff(sourceUrl, targetUrl, dir) {
       }
       resemble(website1Image).compareTo(website2Image)
         .onComplete(function(data) {
-        var png = data.getDiffImage(),
-            pngBuffer = new Buffer([]),
-            pngStream = png.pack();
-        pngStream.on('data', function(data) {
-          pngBuffer = Buffer.concat([pngBuffer, data]);
-        });
-        pngStream.on('finished', function() {
-          var base64 = pngBuffer.toString('base64');
-          fs.writeFile(dir + 'compare.png',
-              base64, 'base64', function(err) {
-            if (err) {
-              deferred.reject(err);
-            }
-            deferred.resolve({
-              similarity: 100 - data.misMatchPercentage,
-              data: base64
+          var png = data.getDiffImage(),
+              pngBuffer = new Buffer([]),
+              pngStream = png.pack();
+          pngStream.on('data', function(data) {
+            pngBuffer = Buffer.concat([pngBuffer, data]);
+          });
+          pngStream.on('finished', function() {
+            var base64 = pngBuffer.toString('base64');
+            fs.writeFile(dir + 'compare.png',
+                base64, 'base64', function(err) {
+              if (err) {
+                deferred.reject(err);
+              }
+              deferred.resolve({
+                similarity: 100 - data.misMatchPercentage,
+                data: base64
+              });
             });
           });
-        });
       });
     });
   });
