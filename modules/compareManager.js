@@ -98,7 +98,7 @@ function getDiff(sourceUrl, targetUrl, dir) {
           pngStream.on('data', function(data) {
             pngBuffer = Buffer.concat([pngBuffer, data]);
           });
-          pngStream.on('finished', function() {
+          pngStream.on('end', function() {
             var base64 = pngBuffer.toString('base64');
             fs.writeFile(dir + 'compare.png',
                 base64, 'base64', function(err) {
