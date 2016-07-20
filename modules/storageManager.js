@@ -9,6 +9,14 @@ var StorageWriter = function(path) {
     });
   };
 
+  this.newCompare = function(callback) {
+    var newPath = path + uuid.v4() + '/';
+    fs.mkdir(newPath, function() {
+      if (typeof callback === 'function')
+        callback(newPath); 
+    });
+  };
+
   this.newFile = function(name, content, callback) {
     var newPath = path + name;
     fs.writeFile(newPath, content, 'utf-8', function(err) {

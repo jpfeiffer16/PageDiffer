@@ -10,7 +10,8 @@ var CompareManger = function() {
     //TODO: Need to test between a single object and an array of compares here.
     if (!compare.length) {
       //TODO: Need some sanity checks on the compare object here.
-      storageWriter.newRecord(fileSafe(compare.sourceUrl) + '-' + fileSafe(compare.targetUrl), function (path) {
+      //storageWriter.newRecord(fileSafe(compare.sourceUrl) + '-' + fileSafe(compare.targetUrl), function (path) {
+      storageWriter.newCompare(function (path) {
         getDiff(compare.sourceUrl, compare.targetUrl, path)
         .then(function(info) {
             console.log('Done with compare');
