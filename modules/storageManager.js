@@ -17,6 +17,10 @@ var StorageWriter = function(path) {
     });
   };
 
+  this.newOverviewLink = function(linkPath, callback) {
+    fs.symlink(linkPath + 'overview/' + name + '.png', path, callback);
+  };
+
   this.newFile = function(name, content, callback) {
     var newPath = path + name;
     fs.writeFile(newPath, content, 'utf-8', function(err) {
@@ -41,7 +45,7 @@ var StorageManager = function() {
 
   //NOTE: Create the top-level dir for the compare
   var id = 'compare-' + uuid.v4();
-  self.path = dir + '/' + id + '/';
+  self.path = dir + id + '/';
   fs.mkdir(self.path, function(err) {
     if (err) throw err;
   });

@@ -49,10 +49,7 @@ var CompareManger = function() {
               item.inspect().state == 'rejected') {
             //NOTE: Add a new compare and run it here.
             var currentCompare = compare[index];
-            storageWriter.newRecord(
-                fileSafe(currentCompare.sourceUrl) + '-' +
-                fileSafe(currentCompare.targetUrl),
-                function(path) {
+            storageWriter.newCompare(function(path) {
               item = getDiff(
                   currentCompare.sourceUrl,
                   currentCompare.targetUrl,
@@ -60,6 +57,7 @@ var CompareManger = function() {
                 .then(function(data) {
                   //Success here 
                   done++;
+                  storageWriter.newOverviewLink(path);
                   reloadThreads();
                 }, function() {
                   //Failure here
@@ -91,28 +89,36 @@ function getDiff(sourceUrl, targetUrl, dir) {
       }
       resemble(website1Image).compareTo(website2Image)
         .onComplete(function(data) {
-          var png = data.getDiffImage(),
-              pngBuffer = new Buffer([]),
-              pngStream = png.pack();
-          pngStream.on('data', function(data) {
-            pngBuffer = Buffer.concat([pngBuffer, data]);
+          data.getDiffImage().pack()
+            .pipe(fs.createWriteStream(dir + 'compare.png'));
+          deferred.resolve({
+            similarity: 100 - data.misMatchPercentage
           });
-          pngStream.on('end', function() {
-            var base64 = pngBuffer.toString('base64');
-            fs.writeFile(dir + 'compare.png',
-                base64, 'base64', function(err) {
-              if (err) {
-                deferred.reject(err);
-              }
-              deferred.resolve({
-                similarity: 100 - data.misMatchPercentage,
-                data: base64
-              });
-            });
-            fs.writeFile(dir + 'info.json', JSON.stringify({
-              similarity: 100 - data.misMatchPercentage
-            }), 'utf-8');
-          });
+          fs.writeFile(dir + 'info.json', JSON.stringify({
+            similarity: 100 - data.misMatchPercentage
+          }), 'utf-8');
+          //var png = data.getDiffImage(),
+          //    pngBuffer = new Buffer([]),
+          //    pngStream = png.pack();
+          //pngStream.on('data', function(data) {
+          //  pngBuffer = Buffer.concat([pngBuffer, data]);
+          //});
+          //pngStream.on('end', function() {
+          //  var base64 = pngBuffer.toString('base64');
+          //  fs.writeFile(dir + 'compare.png',
+          //      base64, 'base64', function(err) {
+          //    if (err) {
+          //      deferred.reject(err);
+          //    }
+          //    deferred.resolve({
+          //      similarity: 100 - data.misMatchPercentage,
+          //      data: base64
+          //    });
+          //  });
+          //  fs.writeFile(dir + 'info.json', JSON.stringify({
+          //    similarity: 100 - data.misMatchPercentage
+          //  }), 'utf-8');
+          //});
       });
     });
   });
