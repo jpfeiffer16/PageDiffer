@@ -18,7 +18,9 @@ var StorageWriter = function(path) {
   };
 
   this.newOverviewLink = function(linkPath, callback) {
-    fs.symlink(linkPath + 'overview/' + name + '.png', path, callback);
+    var splitFileName = linkPath.split('/');
+    var name = splitFileName[splitFileName.length - 2];
+    fs.symlink(linkPath, path + 'overview/' + name + '.png', callback);
   };
 
   this.newFile = function(name, content, callback) {
