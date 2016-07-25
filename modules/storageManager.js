@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    os = require('os');
 var StorageWriter = function(path) {
   this.newRecord = function(name, callback) {
     var newPath = path + name + '/';
@@ -60,6 +61,60 @@ var StorageManager = function() {
   };
 }
 
+var OperationManager = function() {
+  this.write = function() {
+    return new StorageManager();
+  };
+  this.parse = function() {
+    return parseTree();
+  };
+}
+
+function Job(srcpath) {
+  var path = require('path');
+  var self = this;
+  self.compares = [];
+  self.id = srcpath.split('/')[srcpath.split('/').length - 1]
+    .replace('compare-', '');
+  var comparesFiles = fs.readdirSync(srcpath).filter(function(file) {
+    return fs.statSync(path.join(srcpath, file)).isDirectory() &&
+      file.split('/')[file.split('/').length - 1] != 'overview';
+  });
+  comparesFiles.forEach(function(compareFile) {
+    self.compares.push(new Compare(path.join(srcpath, compareFile)));
+  });
+}
+
+function Compare(srcpath) {
+  var path = require('path');
+  var self = this;
+  self.id = srcpath.split('/')[srcpath.split('/').length - 1];
+  //For now we will only return the info.json
+  //but eventually we will need properties pointing
+  //to the source and targe images
+  self.info = JSON.parse(
+      fs.readFileSync(path.join(srcpath, 'info.json'), 'utf-8')
+    );
+}
+
+function parseTree() {
+  var path = require('path');
+  var returnObj = {};
+  returnObj.jobs = [];
+  var srcpath = os.homedir();
+  var pagediffPath = path.join(srcpath, 'pagediff');
+  var jobFiles = fs.readdirSync(pagediffPath).filter(function(file) {
+    //console.log(file.split('/')[file.split('/').length - 1]);
+    //var splitFolderName = file.split('/');
+    //var folderName = splitFileName[splitFileName.length - 1];
+    return fs.statSync(path.join(pagediffPath, file)).isDirectory();
+  });
+  jobFiles.forEach(function(jobFile) {
+    returnObj.jobs.push(new Job(path.join(pagediffPath, jobFile)));
+  });
+  return returnObj;
+}
+
 function checkDirectory(directory) {  
   try {
     fs.statSync(directory);
@@ -68,4 +123,4 @@ function checkDirectory(directory) {
   }
 }
 
-module.exports = StorageManager;
+module.exports = new OperationManager();

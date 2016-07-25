@@ -13,20 +13,21 @@ program
   .option('-T, --threads [number]', 'Number of threads to use for csv files.')
   .option('-p, -pipe [boolean]',
       'Output Compare image data to stdout(In base64 format)')
+  .option('-q, --query [boolean]', 'Query the list of compares.')
   .parse(process.argv);
 
 if ((!program.source || !program.target) &&
-    !program.file)
+    !program.file && !program.query)
   throw('Must specify a source and target or specify a file to use with the -f flag. Use --help for usage info.');
 
 var CompareManager = require('./modules/compareManager');
 var StorageManager = require('./modules/storageManager');
-//TODO: Fix StorageManager so we don't need to use an explicit constructor
-var storageManager = new StorageManager();
-var writer = storageManager.getWritter();
 
 if (program.file !== undefined) {
   //TODO: Compare from csv here
+  //TODO: Fix StorageManager so we don't need to use an explicit constructor
+  var storageManager = StorageManager.write();
+  var writer = storageManager.getWritter();
   fs.readFile(program.file, function(err, data) {
     var CsvManager = require('./modules/csvManager');
     CsvManager.parse(data, function(compares) {
@@ -36,6 +37,12 @@ if (program.file !== undefined) {
           }
       );
     });
+  });
+} else if (program.query) {
+  var StorageManager = require('./modules/storageManager');
+  var jobs = StorageManager.parse().jobs;
+  jobs.forEach(function(job) {
+    console.log(job.id, '(' + job.compares.length + ')'); 
   });
 } else {
   CompareManager.doCompare({

@@ -77,8 +77,10 @@ var CompareManger = function() {
 function getDiff(sourceUrl, targetUrl, dir) {
   //TODO: Need some error checks here to make sure both images exist before we do the compare
   var deferred = Q.defer();
-  var website1Image = dir + fileSafe(sourceUrl) + '.png';
-  var website2Image = dir + fileSafe(targetUrl) + '.png';
+  //var website1Image = dir + fileSafe(sourceUrl) + '.png';
+  //var website2Image = dir + fileSafe(targetUrl) + '.png';
+  var website1Image = dir + 'source.png';
+  var website2Image = dir + 'target.png';
   webshot(sourceUrl, website1Image, function(err) {
     if (err) {
       deferred.reject(err);
