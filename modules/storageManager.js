@@ -74,12 +74,14 @@ function Job(srcpath) {
   var path = require('path');
   var self = this;
   self.compares = [];
+  self.error = false;
   self.id = srcpath.split('/')[srcpath.split('/').length - 1]
     .replace('compare-', '');
   var comparesFiles = fs.readdirSync(srcpath).filter(function(file) {
     return fs.statSync(path.join(srcpath, file)).isDirectory() &&
       file.split('/')[file.split('/').length - 1] != 'overview';
   });
+  if (comparesFiles.length == 0) self.error = true;
   comparesFiles.forEach(function(compareFile) {
     self.compares.push(new Compare(path.join(srcpath, compareFile)));
   });
@@ -92,9 +94,17 @@ function Compare(srcpath) {
   //For now we will only return the info.json
   //but eventually we will need properties pointing
   //to the source and targe images
-  self.info = JSON.parse(
-      fs.readFileSync(path.join(srcpath, 'info.json'), 'utf-8')
+  var infoJson = '';
+  self.error = false;
+  try {
+    self.info = JSON.parse(
+      fs.readFileSync(
+        path.join(srcpath, 'info.json'), 'utf-8'
+      )
     );
+  } catch(e) {
+    self.error = e;
+  }
 }
 
 function parseTree() {

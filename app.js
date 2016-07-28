@@ -42,7 +42,10 @@ if (program.file !== undefined) {
   var StorageManager = require('./modules/storageManager');
   var jobs = StorageManager.parse().jobs;
   jobs.forEach(function(job) {
-    console.log(job.id, '(' + job.compares.length + ')'); 
+    console.log(
+      job.id, '(' + (!job.error ? 
+      job.compares.length : 'Error') + ')'
+    ); 
   });
 } else {
   CompareManager.doCompare({
