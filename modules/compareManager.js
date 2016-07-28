@@ -57,9 +57,9 @@ var CompareManger = function() {
                 .then(function(data) {
                   //Success here 
                   done++;
-                  storageWriter.newOverviewLink(path + 'compare.png', function() {
+                  storageWriter.newOverviewLink(path + 'compare.png', function(err) {
                     if (err)
-                      console.log('Error creating overview link:', err);
+                      console.log('Error creating overview link.');
                   });
                   reloadThreads();
                 }, function() {
