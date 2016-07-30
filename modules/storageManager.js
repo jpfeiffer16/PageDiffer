@@ -49,12 +49,8 @@ var StorageManager = function() {
   //NOTE: Create the top-level dir for the compare
   var id = 'compare-' + uuid.v4();
   self.path = dir + id + '/';
-  fs.mkdir(self.path, function(err) {
-    if (err) throw err;
-  });
-  fs.mkdir(self.path + 'overview', function(err) {
-    if (err) throw err;
-  });
+  fs.mkdirSync(self.path);
+  fs.mkdirSync(self.path + 'overview');
 
   this.getWritter = function() {
     return new StorageWriter(self.path);

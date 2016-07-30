@@ -7,6 +7,7 @@ program
   .version(require('./package.json').version)
   .option('-t, --target [string]', 'Target webpage')
   .option('-s, --source [string]', 'Source webpage')
+  .option('-n, --name [string]', 'Name of the job')
   .option('-f, --file [string]',
       'File to read a list of compares from. Should be a csv structured file. The first line will be stripped off.')
   .option('-T, --threads [number]', 'Number of threads to use for csv files.')

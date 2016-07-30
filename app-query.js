@@ -1,5 +1,15 @@
 var program = require('commander');
 
+
+
+
+/*
+
+pagediffer query -j '"compares"'
+
+
+
+*/
 //TOOO: Define command options here
 program
   .option('-j, --jobs [boolean]', 'List the stored jobs and the number of compares in each.')
@@ -12,6 +22,6 @@ if (program.jobs) {
     console.log(
       job.id, '(' + (!job.error ? 
       job.compares.length : 'Error') + ')'
-    ); 
+    );
   });
 }
