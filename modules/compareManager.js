@@ -49,26 +49,27 @@ var CompareManger = function() {
               item.inspect().state == 'rejected') {
             //NOTE: Add a new compare and run it here.
             var currentCompare = compare[index];
-            storageWriter.newCompare(function(path) {
-              item = getDiff(
-                  currentCompare.sourceUrl,
-                  currentCompare.targetUrl,
-                  path)
-                .then(function(data) {
-                  //Success here 
-                  done++;
-                  storageWriter.newOverviewLink(path + 'compare.png', function(err) {
-                    if (err)
-                      console.log('Error creating overview link.');
+            if (currentCompare)
+              storageWriter.newCompare(function(path) {
+                item = getDiff(
+                    currentCompare.sourceUrl,
+                    currentCompare.targetUrl,
+                    path)
+                  .then(function(data) {
+                    //Success here 
+                    done++;
+                    storageWriter.newOverviewLink(path + 'compare.png', function(err) {
+                      if (err)
+                        console.log('Error creating overview link.');
+                    });
+                    reloadThreads();
+                  }, function() {
+                    //Failure here
+                    console.log('failure running compare');
+                    done++;
+                    reloadThreads();
                   });
-                  reloadThreads();
-                }, function() {
-                  //Failure here
-                  console.log('failure running compare');
-                  done++;
-                  reloadThreads();
-                });
-            });
+              });
             index++;
           }
         });
